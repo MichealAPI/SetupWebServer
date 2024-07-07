@@ -1,10 +1,10 @@
-from flask import Flask, request, jsonify
+from flask import Flask, request, jsonify, render_template
 from pymongo import MongoClient
 import os
 
 SECRET_URI = os.getenv('SECRET_URI')
 
-app = Flask(__name__)
+app = Flask(__name__, template_folder="static/templates")
 client = MongoClient(SECRET_URI)
 db = client['mikeslab']
 
@@ -21,9 +21,16 @@ def verify_license(license_key):
 
 
 #
-# GET mapping '/'
+# GET mapping for '/'
 #
-@app.route('/<path:path>', methods=['GET'])
+@app.route('/')
+def index():
+    return render_template('index.html')
+
+#
+# GET mapping '/access'
+#
+@app.route('/access/<path:path>', methods=['GET'])
 def access_folder(path):
     license_key = request.headers.get('License-Key')
 
