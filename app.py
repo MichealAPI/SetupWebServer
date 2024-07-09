@@ -30,15 +30,20 @@ def index():
 #
 # GET mapping '/access'
 #
-@app.route('/access/<path:path>', methods=['GET'])
-def access_folder(path):
+@app.route('/access/<locale>/<project>', methods=['GET'])
+def access_folder(locale, project):
     license_key = request.headers.get('License-Key')
 
     if verify_license(license_key):
-        file = files_collection.find_one({"path": path})
+        file = files_collection.find_one(
+            {
+                "product": project,
+                "locale": locale
+            }
+        )
 
         if file is not None:
-            return file['content']
+            return file['files'], 200
         else:
             return jsonify({"message": "File not found"}), 404
 
